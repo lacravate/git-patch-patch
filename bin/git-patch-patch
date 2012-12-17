@@ -1,0 +1,68 @@
+# encoding: utf-8
+
+# minimal CLI
+require 'getopt/long'
+
+# the patch patcher class
+require File.expand_path('../../lib/git-patch-patch',  __FILE__)
+
+# script options
+OPTS = %w|repo patch_dir pattern replacement branch patch_patch|.freeze
+
+if ARGV.empty?
+  puts "USAGE : #{__FILE__} #{ OPTS.map { |o| "--#{o} <#{o}>" }.join(' ') }"
+  exit
+end
+
+# options population in one go
+opts = Getopt::Long.getopts *OPTS.map { |k| ["--#{k}", Getopt::OPTIONAL] }
+repo, patch_dir, pattern, replacement, branch = OPTS.map { |k| opts[k] }
+
+# editor
+EDITOR = 'vim'
+
+# defaults
+repo ||= '.'
+patch_patch = :patch if opts.has_key? 'patch_patch'
+
+instance_params = { repo: repo }
+instance_params.merge! patch_dir: patch_dir if patch_dir
+instance_params.merge! branch: branch if branch
+
+# patcher, commits list on specified branch, checkout to specific work branch
+patcher = Git::Trifle::PatchPatcher.new instance_params
+
+patcher.patch_work(pattern, replacement, :filenames, :patch) do |patch|
+  if patch.work == :done
+    puts "We already have a patch for the diff between #{patch.first_commit} and #{patch.second_commit} (at #{patch.file})"
+  elsif patch.error
+    # Houston we have a problem
+    puts "Whoopsie... We got an error :"
+    # and report what we saw
+    puts patch.error
+
+    puts "Do we [r]eview the patch (and try again) or do we [s]top ?"
+    # and ask what to do. stop or review ?
+    choice = STDIN.gets
+    if choice.to_s.chomp == 'r'
+      patch.save
+      system("#{EDITOR} #{patch.file}")
+      patch.reload_from_file 
+    else
+      exit
+    end
+  elsif patch.work == :patch
+    # we tell user and ask him if he/she trusts what's done
+    # or if he/she wants to review
+    puts "we found matches for '#{pattern}' in the patch (not the filenames)"
+    puts "do you want to check the patch ?"
+    edit = STDIN.gets
+
+    # yes duck-typing
+    if edit.downcase.start_with? 'y'
+      patch.save
+      system "#{EDITOR} #{patch.file}"
+      patch.reload_from_file
+    end
+  end
+end
