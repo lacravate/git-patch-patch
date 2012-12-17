@@ -7,16 +7,16 @@ require 'getopt/long'
 require File.expand_path('../../lib/git-patch-patch',  __FILE__)
 
 # script options
-OPTS = %w|repo patch_dir pattern replacement branch patch_patch|.freeze
-
-if ARGV.empty?
-  puts "USAGE : #{__FILE__} #{ OPTS.map { |o| "--#{o} <#{o}>" }.join(' ') }"
-  exit
-end
+OPTS = %w|repo patch_dir pattern replacement branch patch_patch help|.freeze
 
 # options population in one go
 opts = Getopt::Long.getopts *OPTS.map { |k| ["--#{k}", Getopt::OPTIONAL] }
-repo, patch_dir, pattern, replacement, branch = OPTS.map { |k| opts[k] }
+repo, patch_dir, pattern, replacement, branch, help = OPTS.map { |k| opts[k] }
+
+if ARGV.empty? || help
+  puts "USAGE : #{__FILE__} #{ OPTS.map { |o| "--#{o} <#{o}>" }.join(' ') }"
+  exit
+end
 
 # editor
 EDITOR = 'vim'
