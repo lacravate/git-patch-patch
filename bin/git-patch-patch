@@ -7,14 +7,14 @@ require 'getopt/long'
 require File.expand_path('../../lib/git-patch-patch',  __FILE__)
 
 # script options
-OPTS = %w|repo patch_dir pattern replacement branch patch_patch help|.freeze
+PATCH_OPTS = %w|repo patch_dir pattern replacement branch patch_patch|
 
 # options population in one go
-opts = Getopt::Long.getopts *OPTS.map { |k| ["--#{k}", Getopt::OPTIONAL] }
-repo, patch_dir, pattern, replacement, branch, help = OPTS.map { |k| opts[k] }
+opts = Getopt::Long.getopts *(PATCH_OPTS + %w|help|).map { |k| ["--#{k}", Getopt::OPTIONAL] }
+repo, patch_dir, pattern, replacement, branch = PATCH_OPTS.map { |k| opts[k] }
 
-if ARGV.empty? || help
-  puts "USAGE : #{__FILE__} #{ OPTS.map { |o| "--#{o} <#{o}>" }.join(' ') }"
+if ARGV.empty? || opts.has_key?('help') || opts.has_key?('h')
+  puts "USAGE : #{__FILE__} #{ PATCH_OPTS.map { |o| "--#{o} <#{o}>" }.join(' ') }"
   exit
 end
 
