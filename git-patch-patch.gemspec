@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
   s.rubyforge_project = '[none]'
 
-  # Di reaaly need to specify that one ?
+  # Do i really need to specify that one ?
   s.add_dependency "getopt"
   s.add_dependency "git-trifle" # git handle
   s.add_dependency "path-accessor" # file accessor
