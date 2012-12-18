@@ -36,7 +36,11 @@ instance_params.merge! branch: branch if branch
 # patcher, commits list on specified branch, checkout to specific work branch
 patcher = Git::Trifle::PatchPatcher.new instance_params
 
-patcher.patch_work(pattern, replacement, :filenames, :patch) do |patch|
+# works default and according to user's request
+works = [:filenames]
+works << :patch if patch_patch
+
+patcher.patch_work(pattern, replacement, *works) do |patch|
   if patch.work == :done
     puts "We already have a patch for the diff between #{patch.first_commit} and #{patch.second_commit} (at #{patch.file})"
   elsif patch.error
