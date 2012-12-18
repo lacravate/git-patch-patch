@@ -65,7 +65,7 @@ describe 'git-patch-patch' do
           end
 
           errors.compact.size.should == 0
-          works.size.should == 7
+          works.size.should == 7 # (commits number - first one)*2 - job done
           works.first.should == :done
         end
       end
@@ -86,7 +86,7 @@ describe 'git-patch-patch' do
 
           File.size(File.join(test_repo.directory, 'init')).should == 0
           errors.compact.size.should == 1
-          works.size.should == subject.commits.size
+          works.size.should == subject.commits.size  # commits number - first one + error retry
         end
       end
 
@@ -106,7 +106,7 @@ describe 'git-patch-patch' do
           File.exists?(File.join(test_repo.directory, 'git-patch')).should be_false
           File.read(File.join(test_repo.directory, 'README.md')).include?('plop-patch').should be_true
           errors.compact.size.should == 0
-          works.size.should == 8
+          works.size.should == 8  # (commits number - first one)*2
         end
 
         it "should move files to git-patch-patch only in filenames subdir and report no error" do
@@ -124,7 +124,7 @@ describe 'git-patch-patch' do
           File.exists?(File.join(test_repo.directory, 'git-patch')).should be_false
           File.read(File.join(test_repo.directory, 'README.md')).include?('plop-patch').should be_false
           errors.compact.size.should == 0
-          works.size.should == 4
+          works.size.should == 4 # commits number - first one
         end
 
         it "should operate normally even though no patch was patched" do
@@ -140,7 +140,7 @@ describe 'git-patch-patch' do
           end
 
           errors.compact.size.should == 0
-          works.size.should == 8
+          works.size.should == 8 # (commits number - first one)*2
         end
       end
 
