@@ -10,7 +10,10 @@ require File.expand_path('../../lib/git-patch-patch',  __FILE__)
 PATCH_OPTS = %w|repo patch_dir pattern replacement branch patch_patch|
 
 # options population in one go
-opts = Getopt::Long.getopts *(PATCH_OPTS + %w|help|).map { |k| ["--#{k}", Getopt::OPTIONAL] }
+opts = Getopt::Long.getopts *(PATCH_OPTS + %w|help dont_ask|).map { |k|
+  ["--#{k}", Getopt::OPTIONAL]
+}
+
 repo, patch_dir, pattern, replacement, branch = PATCH_OPTS.map { |k| opts[k] }
 
 if ARGV.empty? || opts.has_key?('help') || opts.has_key?('h')
@@ -24,6 +27,7 @@ EDITOR = 'vim'
 # defaults
 repo ||= '.'
 patch_patch = :patch if opts.has_key? 'patch_patch'
+dont_ask = true if opts.has_key? 'dont_ask'
 
 instance_params = { repo: repo }
 instance_params.merge! patch_dir: patch_dir if patch_dir
@@ -52,17 +56,19 @@ patcher.patch_work(pattern, replacement, :filenames, :patch) do |patch|
       exit
     end
   elsif patch.work == :patch
-    # we tell user and ask him if he/she trusts what's done
-    # or if he/she wants to review
-    puts "we found matches for '#{pattern}' in the patch (not the filenames)"
-    puts "do you want to check the patch ?"
-    edit = STDIN.gets
+    unless dont_ask
+      # we tell user and ask him if he/she trusts what's done
+      # or if he/she wants to review
+      puts "we found matches for '#{pattern}' in the patch (not the filenames)"
+      puts "do you want to check the patch ?"
+      edit = STDIN.gets
 
-    # yes duck-typing
-    if edit.downcase.start_with? 'y'
-      patch.save
-      system "#{EDITOR} #{patch.file}"
-      patch.reload_from_file
+      # yes duck-typing
+      if edit.downcase.start_with? 'y'
+        patch.save
+        system "#{EDITOR} #{patch.file}"
+        patch.reload_from_file
+      end
     end
   end
 end
