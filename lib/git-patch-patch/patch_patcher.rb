@@ -84,7 +84,7 @@ module Git
                                 first_commit: first_commit,
                                 second_commit: second_commit,
                                 file: patch_file_for(second_commit),
-                                work: patch_file_for?(second_commit)
+                                work: patch_file_for(second_commit).exist?
       end
 
       # plain as plain :
@@ -124,11 +124,6 @@ module Git
                          Pathname(@t.directory).realpath.to_s.sub('/',''),
                          commit.to_s,
                          'patch'
-      end
-
-      # is there a patch for this sha ?
-      def patch_file_for?(commit)
-        patch_file_for(commit).exist?
       end
 
     end
