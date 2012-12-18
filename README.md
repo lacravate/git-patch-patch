@@ -28,14 +28,15 @@ gem "git-patch-patch"
 
 ``` shell
 ruby bin/git-patch-patch --repo /home/me/my_repo \
-     --pattern pattern_to_replce --replacement replacement \
-     --patch_dir '/tmp' --branch master --patch_patch
+     --pattern pattern_to_replace --replacement replacement \
+     --patch_dir '/tmp' --branch master --patch_patch --dont_ask
 
 ```
 
 I hope most of the options will be crystal clear without explanation. Yet :
  - patch dir is temp' directory where work files (patches) will be stored
  - patch_patch asks the script to perform replacement not only on filenames
+ - dont_ask enters interactive mode only in case of a Git error
 
 It works on a dedicated branch with a barbaric name, trying the script should
 be completely harmful, if not useful.
@@ -76,6 +77,13 @@ operating on its own branch (revert being then a childlike
 `git branch -D work_branch`). And there's a ludicrous amount of spec's to ensure
 the script does what it says it does.
 
+## TODO
+- use cherry-pick instead of making a new commit when no modification was made
+- checkout -b new_branch to a specific commit to reduce the amount of reviewed
+  commits
+- add path delimiter to review history only on a subset of the repo' file, again
+  to reduce the amount of reviewed commits
+- have an idea when i'll do all the above-mentionned
 
 Copyright
 ---------
