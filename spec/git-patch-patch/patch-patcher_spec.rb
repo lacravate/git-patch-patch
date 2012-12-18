@@ -211,6 +211,14 @@ describe 'git-patch-patch' do
         subject.file.read.should == subject
         subject.changed?.should be_true
       end
+
+      it "should load its content from file if work is set as done (or true)" do
+        patch = described_class.new 'plop', file: subject.file, work: true
+
+        patch.should == subject
+        patch.work.should == :done
+        patch.changed?.should be_false
+      end
     end
 
   end

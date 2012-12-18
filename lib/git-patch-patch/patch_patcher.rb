@@ -171,8 +171,14 @@ module Git
       def initialize(string, attributes=nil)
         # instance attributes in one line
         (attributes ||= {}).each { |k, v| send "#{k}=", v }
-        # give work the value we want
-        @work = :done if @work == true
+
+        # job done ? ok then...
+        if @work == true || @work == :done
+          # give work the value we want
+          @work = :done
+          string = file.read
+        end
+
         # changes handler
         @previous = string.to_s
 
