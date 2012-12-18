@@ -56,11 +56,12 @@ module Git
 
           # even if work is done we yield the patch
           # to allow modification
+          patch.work == :done &&
+            yield(patch)
+
           # if a patch file is found, we commit and
           # jump to next iteration
-          patch.work == :done &&
-            yield(patch) &&
-            patch_file_for?(c_next) &&
+          patch.file.exist? &&
             commit_patch(&block) &&
             next
 

@@ -49,6 +49,27 @@ describe 'git-patch-patch' do
     end
 
     describe 'patch_work' do
+      context 'when job is done' do
+        before {
+          subject.diff *commits
+          subject.patch.save
+        }
+
+        it "should nicely handle a Git failure and giving a chance to do things properly" do
+          errors = []
+          works = []
+
+          subject.patch_work('git-patch', 'plop', :patch, :filenames) do |patch|
+            errors << patch.error
+            works << patch.work
+          end
+
+          errors.compact.size.should == 0
+          works.size.should == 7
+          works.first.should == :done
+        end
+      end
+
       context 'replacement of "init"' do
         it "should nicely handle a Git failure and giving a chance to do things properly" do
           errors = []
