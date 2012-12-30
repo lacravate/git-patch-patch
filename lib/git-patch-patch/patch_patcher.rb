@@ -1,12 +1,12 @@
 # encoding: utf-8
 
 # from stdlib
-require 'pathname'
-require 'forwardable'
+#~ require 'pathname'
 
 # from me
 require 'git-trifle'
-require 'path-accessor'
+require 'pedlar'
+require 'pathstring'
 
 # this class knows how make a diff and
 # write it to a retrievable patch
@@ -118,12 +118,12 @@ module Git
       # unique patch filename for a given sha and a given local repo'
       def patch_file_for(commit)
         @patch_dir.join 'git-patch-patch',
-                         # horrendous but necessary to ensure unicity
-                         # of path, without having an absolute path
-                         # that 'join' doesn't like
-                         Pathname(@t.directory).realpath.to_s.sub('/',''),
-                         commit.to_s,
-                         'patch'
+                        # horrendous but necessary to ensure unicity
+                        # of path, without having an absolute path
+                        # that 'join' doesn't like
+                        Pathname(@t.directory).realpath.to_s.sub('/',''),
+                        commit.to_s,
+                        'patch'
       end
 
     end
@@ -133,8 +133,9 @@ module Git
     class PatchPatch < String
 
       # file handling
-      extend PathAccessor
+      extend Pedlar
 
+      peddles Pathstring, :path
       path_accessor :file
       attr_accessor :first_commit, :second_commit, :work, :error
 
@@ -171,6 +172,7 @@ module Git
       def initialize(string, attributes=nil)
         # instance attributes in one line
         (attributes ||= {}).each { |k, v| send "#{k}=", v }
+        file_with attributes[:file].to_s if attributes[:file]
 
         # job done ? ok then...
         if @work == true || @work == :done
