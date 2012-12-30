@@ -1,8 +1,5 @@
 # encoding: utf-8
 
-# from stdlib
-#~ require 'pathname'
-
 # from me
 require 'git-trifle'
 require 'pedlar'
@@ -132,7 +129,7 @@ module Git
     # interface, but it knows a lot more
     class PatchPatch < String
 
-      # file handling
+      # file interface
       extend Pedlar
 
       peddles Pathstring, :path
